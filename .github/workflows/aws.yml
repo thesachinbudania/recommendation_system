@@ -90,11 +90,11 @@ jobs:
         container-name: ${{ env.CONTAINER_1_NAME }}
         image: ${{ steps.build-image.outputs.image }}
 
-    - name: Fill in t he new image ID in the celery container
+    - name: Fill in the new image ID in the celery container
       id: task-def-celery
       uses: aws-actions/amazon-ecs-render-task-definition@v1
       with:
-        task-definition: ${{ env.ECS_TASK_DEFINTION }}
+        task-definition: ${{ env.ECS_TASK_DEFINITION }}
         container-name: ${{ env.CONTAINER_2_NAME }}
         image: ${{ steps.build-image.outputs.image }}
 
