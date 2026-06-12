@@ -83,7 +83,7 @@ jobs:
         echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
 
     - name: Fill in the new image ID in the django container of Amazon ECS task definition
-      id: task-def
+      id: task-def-django
       uses: aws-actions/amazon-ecs-render-task-definition@v1
       with:
         task-definition: ${{ env.ECS_TASK_DEFINITION }}
@@ -91,7 +91,7 @@ jobs:
         image: ${{ steps.build-image.outputs.image }}
 
     - name: Fill in t he new image ID in the celery container
-      id: task-def
+      id: task-def-celery
       uses: aws-actions/amazon-ecs-render-task-definition@v1
       with:
         task-definition: ${{ env.ECS_TASK_DEFINTION }}
