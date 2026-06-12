@@ -19,11 +19,15 @@ jobs:
     - uses: actions/checkout@v4
     - name: Start MinIO Server
       uses: comfuture/minio-action@v1
+      env:
+        AWS_ACCESS_KEY_ID: minio-admin
+        AWS_SECRET_ACCESS_KEY: minio-admin
+        AWS_DEFAULT_REGION: us-east-1
       with:
-        access_key: 'minio-admin'
-        secret_key: 'minio-admin'
+        access_key: minio-admin
+        secret_key: minio-admin
         port: 9000
-        bucket_name: 'test-bucket'
+        bucket_name: test-bucket
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v3
       with:
