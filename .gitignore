@@ -1,0 +1,5 @@
+.venv/
+.vscode/
+.idea/
+recommendation_system/.env
+recommendation_system/staticfiles/
