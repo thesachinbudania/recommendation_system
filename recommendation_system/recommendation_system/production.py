@@ -17,8 +17,8 @@ DATABASES = {
     }
 }
 
-CELERY_BROKER_URL = f'redis://{os.getenv('CACHE_HOST', 'localhost')}:6379/0'
-CELERY_RESULT_BACKEND = f'redis://{os.getenv('CACHE_HOST', 'localhost')}:6379/0'
+CELERY_BROKER_URL = f'redis://demo-apps-q58wvp.serverless.aps1.cache.amazonaws.com:6379/0'
+CELERY_RESULT_BACKEND = f'redis://demo-apps-q58wvp.serverless.aps1.cache.amazonaws.com:6379/0'
 
 AWS_ACCESS_KEY_ID = os.getenv("AWS_ACCESS_KEY_ID")
 AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_ACCESS_KEY")
