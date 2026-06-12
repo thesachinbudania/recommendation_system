@@ -11,7 +11,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from .models import Movie, UserMoviePreferences
 from .serializers import MovieSerializer, AddPreferenceSerializer, AddToWatchHistorySerializer, \
-    GeneralFileUploadSerializer
+    GeneralFileUploadSerializer, WatchHistorySerializer
 from .services import add_preference, user_preferences, user_watch_history, add_watch_history
 from contextlib import contextmanager
 from django.core.files.storage import default_storage
@@ -126,6 +126,26 @@ class UserPreferencesView(APIView):
         data = user_preferences(user_id)
         return Response(data)
 
+
+@extend_schema(
+    summary="Add watch history for a user",
+    description="Adds the provided watch history in the request body to the watch history of the user in the system.",
+    request=AddToWatchHistorySerializer,
+    responses={
+        201: OpenApiResponse(description="Movie added to current user's watch history."),
+        404: OpenApiResponse(description="Movie not found."),
+    },
+    methods=["POST"],
+)
+@extend_schema(
+    summary="Fetch watch history",
+    description="Returns the watch history in the system for the user with the given user id.",
+    responses={
+        200: WatchHistorySerializer(many=True),
+        404: OpenApiResponse(description="User not found.")
+    },
+    methods=["GET"],
+)
 @permission_classes([IsAuthenticated,])
 class WatchHistoryView(APIView):
     """
