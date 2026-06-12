@@ -125,16 +125,21 @@ STORAGES = {
     },
 }
 
-AWS_ACCESS_KEY_ID = os.getenv("AWS_ACCESS_KEY_ID", 'minio-admin')
-AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_ACCESS_KEY", 'minio-admin')
-AWS_STORAGE_BUCKET_NAME = os.getenv("AWS_STORAGE_BUCKET_NAME", 'test-bucket')
-AWS_S3_ENDPOINT_URL = os.getenv("AWS_S3_ENDPOINT_URL", 'http://localhost:9000')
-AWS_S3_CUSTOM_DOMAIN = os.getenv("AWS_S3_CUSTOM_DOMAIN", 'localhost:9000')
-AWS_S3_USE_SSL = os.getenv("AWS_S3_USE_SSL", 'True') == "True"
+
 
 SPECTACULAR_SETTINGS = {
     "TITLE": "Movie Recommendation API",
     "DESCRIPTION": "An API for managing movies, user preferences, and recommendations.",
     "VERSION": "1.0.0",
     "SERVE_INCLUDE_SCHEMA": False,
+}
+
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://localhost:6379/1",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        }
+    }
 }
