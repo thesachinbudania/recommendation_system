@@ -10,13 +10,6 @@ jobs:
   test:
     runs-on: ubuntu-latest
 
-    env:
-      DB_HOST: ${{secrets.DB_HOST}}
-      DB_NAME: ${{secrets.DB_NAME}}
-      DB_PASSWORD: ${{secrets.DB_PASSWORD}}
-      DB_PORT: ${{secrets.DB_PORT}}
-      DB_USER: ${{secrets.DB_USER}}
-
     strategy:
       max-parallel: 4
       matrix:
@@ -24,6 +17,13 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
+    - name: Start MinIO Server
+      uses: comfuture/minio-action@v1
+      with:
+        access_key: 'minio-admin'
+        secret_key: 'minio-admin'
+        port: 9000
+        bucket_name: 'test-bucket'
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v3
       with:

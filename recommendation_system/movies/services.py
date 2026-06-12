@@ -94,7 +94,7 @@ def parse_csv(file: IO[Any]) -> int:
         row["extra_data"] = extra_data_dict
         try:
             row["release_year"] = int(row["release_year"])
-        except ValueError:
+        except KeyError:
             continue
         row["title"] = clean_text(row["title"])
         row["genres"] = [clean_text(genre) for genre in row["genres"].split(',')]

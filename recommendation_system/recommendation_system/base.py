@@ -65,22 +65,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'recommendation_system.wsgi.application'
 
-
-# Database
-# https://docs.djangoproject.com/en/5.2/ref/settings/#databases
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.getenv('DB_NAME'),
-        'USER': os.getenv('DB_USER'),
-        'PASSWORD': os.getenv('DB_PASSWORD'),
-        'HOST': os.getenv('DB_HOST'),
-        'PORT': os.getenv('DB_PORT'),
-    }
-}
-
-
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
 
@@ -132,9 +116,6 @@ REST_FRAMEWORK = {
     'DEFAULT_SCHEMA_CLASS': "drf_spectacular.openapi.AutoSchema",
 }
 
-CELERY_BROKER_URL = os.getenv("CELERY_BORKER_URL", 'redis://localhost:6379/0')
-CELERY_RESULT_BACKEND = os.getenv("CELERY_RESULT_BACKEND", 'redis://localhost:6379/0')
-
 STORAGES = {
     "default": {
         "BACKEND": "storages.backends.s3boto3.S3Boto3Storage",
@@ -144,13 +125,12 @@ STORAGES = {
     },
 }
 
-AWS_ACCESS_KEY_ID = os.getenv("AWS_ACCESS_KEY_ID", 'minioadmin')
-AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_ACCESS_KEY", 'minioadmin')
-AWS_STORAGE_BUCKET_NAME = os.getenv("AWS_STORAGE_BUCKET_NAME", 'mybucket')
+AWS_ACCESS_KEY_ID = os.getenv("AWS_ACCESS_KEY_ID", 'minio-admin')
+AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_ACCESS_KEY", 'minio-admin')
+AWS_STORAGE_BUCKET_NAME = os.getenv("AWS_STORAGE_BUCKET_NAME", 'test-bucket')
 AWS_S3_ENDPOINT_URL = os.getenv("AWS_S3_ENDPOINT_URL", 'http://localhost:9000')
 AWS_S3_CUSTOM_DOMAIN = os.getenv("AWS_S3_CUSTOM_DOMAIN", 'localhost:9000')
 AWS_S3_USE_SSL = os.getenv("AWS_S3_USE_SSL", 'True') == "True"
-AWS_STORAGE_BUCKET_NAME = os.getenv("AWS_STORAGE_BUCKET_NAME", 'test-bucket')
 
 SPECTACULAR_SETTINGS = {
     "TITLE": "Movie Recommendation API",

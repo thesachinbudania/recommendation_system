@@ -2,7 +2,7 @@ import os
 from celery import Celery
 
 os.environ.setdefault(
-    "DJANGO_SETTINGS_MODULE", "recommendation_system.settings"
+    "DJANGO_SETTINGS_MODULE", "recommendation_system.production"
 )
 
 app = Celery("movies")
