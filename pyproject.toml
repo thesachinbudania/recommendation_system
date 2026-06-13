@@ -25,6 +25,7 @@ dependencies = [
     "packaging==26.2",
     "pluggy==1.6.0",
     "psycopg2-binary>=2.9.12",
+    "pycurl>=7.46.0",
     "pydantic>=2.13.4",
     "pygments==2.20.0",
     "pytest==9.0.3",
