@@ -31,6 +31,10 @@ COPY recommendation_system/ /app/
 
 RUN /app/bin/python manage.py collectstatic --noinput
 
+COPY nltk_download.py /app
+
+RUN /app/bin/python nltk_download.py
+
 # --- Production Stage ---
 FROM python:3.13-slim AS production
 

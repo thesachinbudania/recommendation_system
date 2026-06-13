@@ -4,9 +4,10 @@ from celery import shared_task, chain, group
 from django.core.files.base import ContentFile
 from django.core.files.storage import default_storage
 from rest_framework.exceptions import ValidationError
-
+import logging
 from movies.services import parse_csv, parse_json
 
+logger = logging.getLogger(__name__)
 
 def split_csv_file(file_path: str, chunk_size_mb: int = 100) -> list[str]:
     chunk_paths = []
@@ -85,6 +86,7 @@ def process_chunks(chunk_paths: list, file_type: str) -> int:
 
 @shared_task
 def process_chunk(chunk_path: str, file_type: str) -> int:
+    logger.info('This is the chunk path %s and file_type %s', chunk_path, file_type)
     with default_storage.open(chunk_path, "r") as file:
         if file_type == "text/csv":
             result = parse_csv(file)
@@ -93,12 +95,13 @@ def process_chunk(chunk_path: str, file_type: str) -> int:
         else:
             raise ValidationError("Invalid file type")
         default_storage.delete(chunk_path)
+    logger.info("Processed movies %s", result)
     return result
 
 @shared_task
 def process_file(file_name: str, file_type: str) -> Any:
     if not default_storage.exists(file_name):
-        raise ValidationError("File does not exist in storage.")
+        raise ValidationError(f"File does not exist in storage.")
 
     # Create chain of chunking and processing tasks
     workflow = chain(

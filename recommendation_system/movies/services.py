@@ -14,7 +14,9 @@ from django.shortcuts import get_object_or_404
 from rest_framework.exceptions import ValidationError
 from movies.models import UserMoviePreferences, Movie
 from movies.serializers import PreferencesSerializer
+import logging
 
+logger = logging.getLogger(__name__)
 
 def add_preference(user_id: int, new_preferences: Dict[str, Any]) -> None:
     """
@@ -86,19 +88,24 @@ def parse_csv(file: IO[Any]) -> int:
     movies_processed = 0
     reader = csv.DictReader(file)
     for row in reader:
-        extra_data = row.pop("extra_data").replace("'",'"')
-        try:
-            extra_data_dict = json.loads(extra_data)
-        except json.decoder.JSONDecodeError:
+        extra_data = row.pop("extra_data")
+        if extra_data:
+            extra_data = extra_data.replace("'", '"')
+            try:
+                extra_data_dict = json.loads(extra_data)
+            except json.decoder.JSONDecodeError:
+                extra_data_dict = {}
+        else:
             extra_data_dict = {}
         row["extra_data"] = extra_data_dict
         try:
             row["release_year"] = int(row["release_year"])
         except KeyError:
-            continue
+            pass
         row["title"] = clean_text(row["title"])
         row["genres"] = [clean_text(genre) for genre in row["genres"].split(',')]
         row["country"] = clean_text(row["country"])
+        logger.info("Current movie: %s", row)
         create_or_update_movie(**row)
         movies_processed += 1
     return movies_processed
@@ -156,6 +163,7 @@ def create_or_update_movie(
         )
         return movie, created
    except Exception as e:
+       logger.info("Error while creating movie %s", e)
        raise ValidationError(f"Failed to create or update the movie {str(e)}")
 
 
