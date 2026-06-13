@@ -22,7 +22,6 @@ def readiness(request):
         default_storage.delete(file_path)
         status['s3storage'] = "healthy"
         async_result = celery_ping_task.apply_async()
-        print(async_result)
         outcome = async_result.get(timeout=10)
         if outcome == "pong":
             status['celery'] = "healthy"
