@@ -9,7 +9,7 @@ from movies.services import parse_csv, parse_json
 
 logger = logging.getLogger(__name__)
 
-def split_csv_file(file_path: str, chunk_size_mb: int = 100) -> list[str]:
+def split_csv_file(file_path: str, chunk_size_mb: int = 1) -> list[str]:
     chunk_paths = []
     part = 1
     current_chunk_size = 0
