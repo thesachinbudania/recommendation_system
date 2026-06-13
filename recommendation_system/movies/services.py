@@ -100,11 +100,11 @@ def parse_csv(file: IO[Any]) -> int:
         row["extra_data"] = extra_data_dict
         try:
             row["release_year"] = int(row["release_year"])
+            row["title"] = clean_text(row["title"])
+            row["genres"] = [clean_text(genre) for genre in row["genres"].split(',')]
+            row["country"] = clean_text(row["country"])
         except KeyError:
             pass
-        row["title"] = clean_text(row["title"])
-        row["genres"] = [clean_text(genre) for genre in row["genres"].split(',')]
-        row["country"] = clean_text(row["country"])
         logger.info("Current movie: %s", row)
         create_or_update_movie(**row)
         movies_processed += 1
