@@ -30,6 +30,7 @@ dependencies = [
     "pytest==9.0.3",
     "pytest-django==4.12.0",
     "scikit-learn>=1.9.0",
+    "sqlalchemy>=2.0.50",
     "sqlparse==0.5.5",
     "whitenoise>=6.12.0",
 ]

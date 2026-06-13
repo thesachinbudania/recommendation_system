@@ -1,3 +1,5 @@
+import os
+
 from .base import *
 from socket import gethostbyname, gethostname
 
@@ -17,8 +19,8 @@ DATABASES = {
     }
 }
 
-CELERY_BROKER_URL =  f"{os.getenv("REDIS_CACHE_URL", 'redis://localhost:6379')}/0"
-CELERY_RESULT_BACKEND = f"{os.getenv("REDIS_CACHE_URL", 'redis://localhost:6379')}/0"
+CELERY_BROKER_URL = os.getenv('CELERY_BROKER_URL')
+CELERY_RESULT_BACKEND = os.getenv('CELERY_RESULT_BACKEND')
 
 AWS_ACCESS_KEY_ID = os.getenv("AWS_ACCESS_KEY_ID")
 AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_ACCESS_KEY")
