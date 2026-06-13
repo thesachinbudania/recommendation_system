@@ -33,7 +33,6 @@ RUN /app/bin/python manage.py collectstatic --noinput
 
 COPY nltk_download.py /app
 
-RUN /app/bin/python nltk_download.py
 
 # --- Production Stage ---
 FROM python:3.13-slim AS production
@@ -49,6 +48,8 @@ RUN groupadd -r django && useradd -r -g django -d /app -s /bin/bash django && \
     chown -R django:django /app
 
 USER django
+
+RUN /app/bin/python nltk_download.py
 
 CMD ["/app/bin/gunicorn", "--bind", "0.0.0.0:8000", "recommendation_system.wsgi:application"]
 
