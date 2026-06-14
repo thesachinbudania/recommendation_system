@@ -13,26 +13,26 @@ def split_csv_file(file_path: str, chunk_size_mb: int = 1) -> list[str]:
     chunk_paths = []
     part = 1
     current_chunk_size = 0
-    chunk_lines = []
+    chunk_lines = bytearray()
 
-    with default_storage.open(file_path, "r") as file:
+    with default_storage.open(file_path, "rb") as file:
         for line in file:
-            line_size = len(line.encode("utf-8"))
+            line_size = len(line)
             if (current_chunk_size + line_size) > (chunk_size_mb * 1024 * 1024):
                 chunk_file_name = f"{file_path}_part_{part}.csv"
-                default_storage.save(chunk_file_name, ContentFile("".join(chunk_lines)))
+                default_storage.save(chunk_file_name, ContentFile(bytes(chunk_lines)))
                 chunk_paths.append(chunk_file_name)
-                chunk_lines = []
-                chunk_lines = [line]
+                chunk_lines = bytearray()
+                chunk_lines.extend(line)
                 current_chunk_size = line_size
                 part += 1
             else:
-                chunk_lines.append(line)
+                chunk_lines.extend(line)
                 current_chunk_size += line_size
 
     if chunk_lines: # Save the last chunk if there is any
         chunk_file_name = f"{file_path}_part_{part}.csv"
-        default_storage.save(chunk_file_name, ContentFile("".join(chunk_lines)))
+        default_storage.save(chunk_file_name, ContentFile(bytes(chunk_lines)))
         chunk_paths.append(chunk_file_name)
 
     return chunk_paths
