@@ -14,7 +14,7 @@ def split_csv_file(file_path: str, chunk_size_mb: int = 1) -> list[str]:
     part = 1
     current_chunk_size = 0
     chunk_lines = bytearray()
-
+    header_line="title,genres,country,extra_data,release_year\n"
     with default_storage.open(file_path, "rb") as file:
         for line in file:
             line_size = len(line)
@@ -23,6 +23,7 @@ def split_csv_file(file_path: str, chunk_size_mb: int = 1) -> list[str]:
                 default_storage.save(chunk_file_name, ContentFile(bytes(chunk_lines)))
                 chunk_paths.append(chunk_file_name)
                 chunk_lines = bytearray()
+                chunk_lines.extend(header_line.encode('utf-8'))
                 chunk_lines.extend(line)
                 current_chunk_size = line_size
                 part += 1
