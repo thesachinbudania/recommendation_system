@@ -126,7 +126,6 @@ STORAGES = {
 }
 
 
-
 SPECTACULAR_SETTINGS = {
     "TITLE": "Movie Recommendation API",
     "DESCRIPTION": "An API for managing movies, user preferences, and recommendations.",

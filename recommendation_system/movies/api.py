@@ -11,7 +11,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from .models import Movie, UserMoviePreferences
 from .serializers import MovieSerializer, AddPreferenceSerializer, AddToWatchHistorySerializer, \
-    GeneralFileUploadSerializer, WatchHistorySerializer
+    GeneralFileUploadSerializer, WatchHistorySerializer, PreferencesSerializer
 from .services import add_preference, user_preferences, user_watch_history, add_watch_history
 from contextlib import contextmanager
 from django.core.files.storage import default_storage
@@ -19,7 +19,7 @@ from .tasks import process_file
 from api_auth.permissions import CustomDjangoModelPermissions
 from recommendations.services import UserPreferences, Item, get_recommendations
 from drf_spectacular.utils import extend_schema, OpenApiParameter, OpenApiResponse
-
+import requests
 
 @extend_schema(
     summary="Retrieve all movies",
@@ -110,6 +110,25 @@ class MovieDetailApiView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Movie.objects.all()
     serializer_class = MovieSerializer
 
+
+@extend_schema(
+    summary="Add new preferences for the user",
+    description="Takes in the new preference details such as director, genre etc. and adds them to the users preferences"
+                "in the system. Helpful in finding relavant recommendations.",
+    request=AddPreferenceSerializer,
+    responses={
+        200: OpenApiResponse(description="Successfully added new preferences."),
+    },
+    methods=['POST'],
+)
+@extend_schema(
+    summary="Fetches user's preferences",
+    description="Given a user id in the user_id field fetches the preferences for the user set in the system.",
+    responses={
+        200: PreferencesSerializer,
+    },
+    methods=["GET"],
+)
 @permission_classes([IsAuthenticated,])
 class UserPreferencesView(APIView):
     """
@@ -216,8 +235,20 @@ class GeneralUploadView(APIView):
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-
+@extend_schema(
+    summary="Recommends movies to the user",
+    description="Takes the users current preferences into account and suggest new movies to the user. Uses cosine"
+                "similarity for finding new movies. To save computational resources, the functions calculating the"
+                "preferences and recommendations have been hosted as AWS Lambda functions",
+    parameters=[
+        OpenApiParameter("user_id", int, description="Id of the user to recommend movies to.")
+    ]
+)
 class MovieRecommendationsAPIView(APIView):
+    """
+        The code and functions in this api have not all been used directly but are rather hosted on AWS Lambda to use
+        computational resources more efficiently.
+    """
     def get(self, request):
         user_id = request.query_params.get("user_id")
 
@@ -233,10 +264,8 @@ class MovieRecommendationsAPIView(APIView):
                 detail="User preferences not found.",
                 status_code=status.HTTP_404_NOT_FOUND,
             )
-
-        recommended_items = self._get_recommended_items(user_preferences)
-        response_data = self._format_response(recommended_items)
-
+        response = requests.get(f'{os.getenv('AWS_LAMBDA_URL')}?user_id={user_id}')
+        response_data = self._format_response(response.json())
         return Response(response_data, status=status.HTTP_200_OK)
 
     def _get_user_preferences(self, user_id: str) -> Optional[UserPreferences]:
@@ -295,7 +324,7 @@ class MovieRecommendationsAPIView(APIView):
 
         return get_recommendations(user_preferences=user_preferences, items=items)
 
-    def _format_response(self, recommended_items: list[Item]) -> list[dict]:
+    def _format_response(self, recommended_items: list[Any]) -> list[dict]:
         """
         Formats the recommended items into a response-friendly structure.
 
@@ -303,7 +332,7 @@ class MovieRecommendationsAPIView(APIView):
         :return: A list of dictionaries with content ID and name.
         """
         return [
-            {"id": item.id, "title": item.attributes.get("name", "Unknown")}
+            {"id": item['id'], "title": item['title']}
             for item in recommended_items
         ]
 
